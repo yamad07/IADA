@@ -1,0 +1,11 @@
+version: '2.3'
+services:
+  experiment:
+    tty: true
+    runtime: nvidia
+    volumes:
+      - ..:/app
+    build:
+      context: .
+      dockerfile: gpu.Dockerfile
+    image: iada
