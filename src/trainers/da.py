@@ -18,7 +18,13 @@ class DomainAdversarialTrainer:
         self.validate_data_loader = valid_data_loader
         self.device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
-    def train(self, s_epoch, sm_epoch, da_epoch):
+    def set_loader(self, data_loader):
+        self.data_loader = data_loader
+
+    def val_set_loader(self, validate_data_loader):
+        self.validate_data_loader = validate_data_loader
+
+    def train(self, s_epoch, sm_epoch):
         self.supervised_criterion = nn.NLLLoss()
         self.discriminator_criterion = nn.NLLLoss()
         self.source_domain_discriminator_criterion = nn.NLLLoss()
@@ -65,7 +71,9 @@ class DomainAdversarialTrainer:
         self.target_encoder.load_state_dict(self.source_encoder.state_dict())
         self.source_generator.eval()
 
-        for e in range(da_epoch):
+
+    def train_da(self, epoch):
+        for e in range(epoch):
             self.source_encoder.train()
             self.target_encoder.train()
             self.domain_discriminator.train()
@@ -90,7 +98,6 @@ class DomainAdversarialTrainer:
 
             print("Epoch: {0} D(x): {1} D(G(x)): {2} target_accuracy: {3}".format(
                 e, discriminator_loss, target_adversarial_loss, target_valid_accuracy))
-
 
     def validate(self, e):
         accuracy = 0
